@@ -48,7 +48,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <label>Бумага
 <select id="paper">
 <option value="plain">Чистая</option>
-<option value="cell">Тетрадь в клетку</option>
+<option value="tetrad">Тетрадь</option>
 <option value="lines">Линейка</option>
 </select>
 </label>
@@ -114,57 +114,42 @@ function drawPaper(){
         return;
     }
 
-    if(paper.value === "cell"){
+    const src = getImageSrc();
+    if(!src){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
-        ctx.lineWidth = 1;
-        const step = 25;
-        // Горизонтальные листы
-        for(let y = margin.value; y < canvas.height; y += step){
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-            ctx.stroke();
-        }
-        // Вертикальные линии
-        for(let x = 0; x < canvas.width; x += step){
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-            ctx.stroke();
-        }
-        // Красная линия полей
-        ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(80, 0);
-        ctx.lineTo(80, canvas.height);
-        ctx.stroke();
         return;
     }
 
-    if(paper.value === "lines"){
-        ctx.fillStyle = "#fffdf8";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
-        ctx.lineWidth = 1;
-        const step = 40;
-        for(let y = margin.value; y < canvas.height; y += step){
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-            ctx.stroke();
-        }
-        // Красная линия полей
+    const img = new Image();
+    img.onload = function(){
+        // Растягиваем фото по размеру холста (прямо на весь лист)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // Покраска линии поля (imagine: красная линия в центре)
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(80, 0);
         ctx.lineTo(80, canvas.height);
         ctx.stroke();
-        return;
+        // Далее рисуем текст
+        createText();
+    };
+    img.onerror = function(){
+        ctx.fillStyle = "#fffdf8";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        createText();
+    };
+    img.src = src;
+}
+
+function getImageSrc(){
+    if(paper.value === "tetrad"){
+        return "https://i.postimg.cc/8cLbnYDk/IMG-1907.jpg";
+    } else if(paper.value === "lines"){
+        return "https://i.postimg.cc/PfDKxCDm/IMG-1906.jpg";
     }
+    return "";
 }
 
 function getFont(){
@@ -236,7 +221,6 @@ function createText(){
 
 document.getElementById("create").addEventListener("click", function(){
     drawPaper();
-    createText();
 });
 
 document.getElementById("save").addEventListener("click", function(){
@@ -250,17 +234,14 @@ document.getElementById("save").addEventListener("click", function(){
 [paper, style, size, margin, line, random, textOffset].forEach(element => {
     element.addEventListener("input", function(){
         drawPaper();
-        createText();
     });
     element.addEventListener("change", function(){
         drawPaper();
-        createText();
     });
 });
 
 updateValues();
 drawPaper();
-createText();
 </script>
 </body>
-</html
+</html>
