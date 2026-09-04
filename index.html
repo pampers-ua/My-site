@@ -201,7 +201,7 @@ function createText(){
     ctx.textBaseline = "alphabetic";
     const maxWidth = canvas.width - m * 2 - 110;
     const lineHeight = fontSize * spacing;
-    let y = m + fontSize + offset;
+    let y = m + fontSize + offset - 100;
     const paragraphs = text.value.replace(/\r/g, "").split("\n");
 
     ctx.save();
