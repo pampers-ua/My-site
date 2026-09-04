@@ -212,8 +212,9 @@ function createText(){
             for(const character of currentLine){
                 ctx.save();
                 const j = Number(random.value);
-                // Текст наклоняется в одну сторону, но строго параллельно
-                ctx.rotate(baseTilt);
+                // Текст сейчас сделается как ровный строки (0 градусов) с фиксированным
+                // наклоном, а «Неровность» регулирует только ширин текста
+                ctx.rotate(0);
                 ctx.translate(x, y);
                 ctx.fillText(character, 0, 0);
                 ctx.restore();
