@@ -161,7 +161,7 @@ function drawPaper(){
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(80, 0 let);
+        ctx.moveTo(80, 0);
         ctx.lineTo(80, canvas.height);
         ctx.stroke();
         return;
@@ -180,7 +180,7 @@ function getFont(){
 function wrapText(str, maxWidth){
     const words = str.split(/\s+/);
     const result = [];
-    current = "";
+    let current = "";
     for(const word of words){
         const test = current ? current + " " + word : word;
         if(ctx.measureText(test).width > maxWidth && current){
