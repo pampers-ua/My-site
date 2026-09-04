@@ -65,10 +65,6 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <label>Интервал: <span id="lineValue">1.4</span></label>
 <input id="line" type="range" min="1" max="2" step="0.1" value="1.4">
 </div>
-<div class="option">
-<label>Неровность: <span id="randomValue">2</span> px</label>
-<input id="random" type="range" min="0" max="6" value="2">
-</div>
 </div>
 
 <div class="option" style="margin-top:10px;">
@@ -102,7 +98,6 @@ const style = document.getElementById("style");
 const size = document.getElementById("size");
 const margin = document.getElementById("margin");
 const line = document.getElementById("line");
-const random = document.getElementById("random");
 const xOffset = document.getElementById("xOffset");
 const width = document.getElementById("width");
 const textOffset = document.getElementById("textOffset");
@@ -111,13 +106,10 @@ function updateValues(){
     document.getElementById("sizeValue").textContent = size.value;
     document.getElementById("marginValue").textContent = margin.value;
     document.getElementById("lineValue").textContent = line.value;
-    document.getElementById("randomValue").textContent = random.value;
     document.getElementById("xOffsetValue").textContent = xOffset.value;
     document.getElementById("widthValue").textContent = width.value;
     document.getElementById("textOffsetValue").textContent = textOffset.value;
 }
-
-function randomValue(n){ return (Math.random() * 2 - 1) * n; }
 
 function drawPaper(){
     if(paper.value === "plain"){
@@ -188,7 +180,6 @@ function createText(){
     const offset = Number(textOffset.value);
     const xOff = Number(xOffset.value);
     const maxW = Number(width.value);
-    const baseTilt = (Math.random() * 2 - 1) * 0.05;
 
     ctx.font = fontSize + "px " + getFont() + ", cursive";
     ctx.fillStyle = "#1142a2";
@@ -211,8 +202,7 @@ function createText(){
             let x = xOff;
             for(const character of currentLine){
                 ctx.save();
-                const j = Number(random.value);
-                ctx.rotate(baseTilt);
+                ctx.rotate(0);
                 ctx.translate(x, y);
                 ctx.fillText(character, 0, 0);
                 ctx.restore();
@@ -236,7 +226,7 @@ document.getElementById("save").addEventListener("click", function(){
     link.click();
 });
 
-[paper, style, size, margin, line, random, xOffset, width, textOffset].forEach(element => {
+[paper, style, size, margin, line, xOffset, width, textOffset].forEach(element => {
     element.addEventListener("input", function(){
         drawPaper();
     });
