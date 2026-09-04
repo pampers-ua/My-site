@@ -108,21 +108,17 @@ function updateValues(){
 function randomValue(n){ return (Math.random() * 2 - 1) * n; }
 
 function drawPaper(){
-    // Чистая страница
     if(paper.value === "plain"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         return;
     }
 
-    // Тетрадь в клетку (горизонтальная + вертикальная сетка)
     if(paper.value === "cell"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
         ctx.lineWidth = 1;
-        
-        // Горизонтальные линии
         const step = 25;
         for(let y = margin.value; y < canvas.height; y += step){
             ctx.beginPath();
@@ -130,14 +126,12 @@ function drawPaper(){
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
-        // Вертикальные линии
         for(let x = 0; x < canvas.width; x += step){
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, canvas.height);
             ctx.stroke();
         }
-        // Красная линия полей
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -147,7 +141,6 @@ function drawPaper(){
         return;
     }
 
-    // Линейка (горизонтальные линии)
     if(paper.value === "lines"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -160,7 +153,6 @@ function drawPaper(){
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
-        // Красная линия полей
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -240,6 +232,7 @@ function createText(){
 
 document.getElementById("create").addEventListener("click", function(){
     drawPaper();
+    createText();
 });
 
 document.getElementById("save").addEventListener("click", function(){
@@ -253,14 +246,17 @@ document.getElementById("save").addEventListener("click", function(){
 [paper, style, size, margin, line, random, textOffset].forEach(element => {
     element.addEventListener("input", function(){
         drawPaper();
+        createText();
     });
     element.addEventListener("change", function(){
         drawPaper();
+        createText();
     });
 });
 
 updateValues();
 drawPaper();
+createText();
 </script>
 </body>
 </html>
