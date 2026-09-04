@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HandWrite A4</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Neucha&family=Pangolin&family=Marck+Script&family=Bad+Script&family=Comic+Sans+MS&display=swap" rel="stylesheet">
-
 <style>
 *{box-sizing:border-box}
 
@@ -39,12 +37,12 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <label>
 Стиль почерка
 <select id="style">
-<option value="caveat">Thick &amp; Messy (Caveat)</option>
-<option value="neucha">Thin &amp; Neat (Neucha)</option>
-<option value="pangolin">Wobbly &amp; Kid (Pangolin)</option>
-<option value="marck">Cursive &amp; Sharp (Marck Script)</option>
-<option value="badscript">Loose &amp; Loose (Bad Script)</option>
-<option value="comic">Big &amp; Printed (Comic Sans MS)</option>
+<option value="cursive">Рукописный (cursive)</option>
+<option value="comic">Блокнот (Comic Sans MS)</option>
+<option value="italic">Наклонный (italic)</option>
+<option value="serif">Каллиграфия (serif)</option>
+<option value="bold">Грязный (bold)</option>
+<option value="fantasy">Детский (fantasy)</option>
 </select>
 </label>
 
@@ -154,13 +152,13 @@ function getImageSrc(){
 }
 
 function getFont(){
-    if(style.value === "caveat") return "Caveat";
-    if(style.value === "neucha") return "Neucha";
-    if(style.value === "pangolin") return "Pangolin";
-    if(style.value === "marck") return "Marck Script";
-    if(style.value === "badscript") return "Bad Script";
+    if(style.value === "cursive") return "cursive";
     if(style.value === "comic") return "Comic Sans MS";
-    return "Caveat";
+    if(style.value === "italic") return "italic";
+    if(style.value === "serif") return "serif";
+    if(style.value === "bold") return "bold";
+    if(style.value === "fantasy") return "fantasy";
+    return "cursive";
 }
 
 function wrapText(str, maxWidth){
@@ -190,7 +188,7 @@ function createText(){
     ctx.font = fontSize + "px " + getFont() + ", cursive";
     ctx.fillStyle = "#1142a2";
     ctx.textBaseline = "alphabetic";
-    const maxWidth = canvas.width - m * 2;
+    const maxWidth = canvas.width - m * 2 - 110;
     const lineHeight = fontSize * spacing;
     let y = m + fontSize + offset;
     const paragraphs = text.value.replace(/\r/g, "").split("\n");
@@ -209,8 +207,8 @@ function createText(){
             for(const character of currentLine){
                 ctx.save();
                 const j = Number(random.value);
-                ctx.rotate(randomValue(j) / 150 + baseTilt);
-                ctx.translate(x + randomValue(j), y + randomValue(j) * 0.5);
+                ctx.rotate(baseTilt + randomValue(j) / 250);
+                ctx.translate(x + randomValue(j), y);
                 ctx.fillText(character, 0, 0);
                 ctx.restore();
                 x += ctx.measureText(character).width;
@@ -239,7 +237,7 @@ document.getElementById("save").addEventListener("click", function(){
     });
     element.addEventListener("change", function(){
         drawPaper();
-    });
+   под });
 });
 
 updateValues();
