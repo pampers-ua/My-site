@@ -37,7 +37,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <div class="controls">
 <label>Стиль почерка
 <select id="style">
-<option value="caveat">Небрежный (Caveat)</option min>
+<option value="caveat">Небрежный (Caveat)</option>
 <option value="neucha">Аккуратный (Neucha)</option>
 <option value="pangolin">Детский (Pangolin)</option>
 <option value="marck">Каллиграфический (Marck Script)</option>
@@ -63,7 +63,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 </div>
 <div class="option">
 <label>Интервал: <span id="lineValue">1.4</span></label>
-<input id="line" type="range"="1" max="2" step="0.1" value="1.4">
+<input id="line" type="range" min="1" max="2" step="0.1" value="1.4">
 </div>
 <div class="option">
 <label>Неровность: <span id="randomValue">2</span> px</label>
@@ -212,8 +212,7 @@ function createText(){
             for(const character of currentLine){
                 ctx.save();
                 const j = Number(random.value);
-                // Текст ровный, стабильный (0 градусов)
-                ctx.rotate(0);
+                ctx.rotate(baseTilt);
                 ctx.translate(x, y);
                 ctx.fillText(character, 0, 0);
                 ctx.restore();
