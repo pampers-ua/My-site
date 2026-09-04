@@ -1,4 +1,5 @@
 <script>
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -12,44 +13,44 @@ const random = document.getElementById("random");
 
 
 // ======================================================
-// НАСТРОЙКИ ПОЛОЖЕНИЯ ТЕКСТА
+// НАСТРОЙКИ ТЕКСТА ДЛЯ ФОТОГРАФИЙ
 // ======================================================
 
 const pageSettings = {
 
     tetrad: {
         x: 125,
-        y: 285,
-        width: 970,
-        step: 58
+        y: 145,
+        width: 980,
+        step: 45
     },
 
     cell_red: {
-        x: 125,
-        y: 285,
-        width: 970,
-        step: 58
+        x: 165,
+        y: 185,
+        width: 900,
+        step: 45
     },
 
     lines: {
-        x: 125,
-        y: 285,
-        width: 970,
-        step: 58
+        x: 105,
+        y: 170,
+        width: 1010,
+        step: 55
     },
 
     table: {
-        x: 125,
-        y: 285,
-        width: 970,
-        step: 58
+        x: 120,
+        y: 160,
+        width: 1000,
+        step: 45
     }
 
 };
 
 
 // ======================================================
-// ССЫЛКИ НА ФОТО
+// ФОТОГРАФИИ
 // ======================================================
 
 function getImageSrc(){
@@ -70,7 +71,7 @@ function getImageSrc(){
         return "https://i.postimg.cc/RF53ND7b/IMG-1879.jpg";
     }
 
-    return null;
+    return "";
 }
 
 
@@ -133,7 +134,7 @@ function updateValues(){
 
 
 // ======================================================
-// ПЕРЕНОС СЛОВ
+// ПЕРЕНОС ТЕКСТА
 // ======================================================
 
 function wrapText(str, maxWidth){
@@ -169,20 +170,21 @@ function wrapText(str, maxWidth){
     }
 
     if(current){
+
         result.push(current);
+
     }
 
     return result;
+
 }
 
 
 // ======================================================
-// ТЕКСТ
+// РИСОВАНИЕ ТЕКСТА
 // ======================================================
 
 function createText(){
-
-    const fontSize = Number(size.value);
 
     const settings =
         pageSettings[paper.value] || {
@@ -190,18 +192,22 @@ function createText(){
             x: Number(margin.value),
 
             y:
-                Number(margin.value)
-                + fontSize,
+                Number(margin.value) +
+                Number(size.value),
 
             width:
-                canvas.width
-                - Number(margin.value) * 2,
+                canvas.width -
+                Number(margin.value) * 2,
 
             step:
-                fontSize
-                * Number(line.value)
+                Number(size.value) *
+                Number(line.value)
 
         };
+
+
+    const fontSize =
+        Number(size.value);
 
 
     ctx.font =
@@ -211,23 +217,25 @@ function createText(){
         ", cursive";
 
 
-    // Синие чернила
+    ctx.fillStyle =
+        "#1142a2";
 
-    ctx.fillStyle = "#1142a2";
 
-    ctx.textBaseline = "alphabetic";
+    ctx.textBaseline =
+        "alphabetic";
 
 
     const maxWidth =
         settings.width;
 
 
-    let lineHeight =
+    const lineHeight =
         settings.step *
         (Number(line.value) / 1.4);
 
 
-    let y = settings.y;
+    let y =
+        settings.y;
 
 
     const paragraphs =
@@ -243,6 +251,7 @@ function createText(){
             y += lineHeight;
 
             continue;
+
         }
 
 
@@ -262,10 +271,12 @@ function createText(){
             ){
 
                 break;
+
             }
 
 
-            let x = settings.x;
+            let x =
+                settings.x;
 
 
             for(const character of currentLine){
@@ -316,122 +327,94 @@ function createText(){
 
 
 // ======================================================
-// РИСУЕМ ФОТО + ТЕКСТ
+// ОЧИСТКА CANVAS
+// ======================================================
+
+function clearCanvas(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+}
+
+
+// ======================================================
+// УСТАНОВКА ФОТО КАК ФОНА
+// ======================================================
+
+function setPaperBackground(){
+
+    const imageSrc =
+        getImageSrc();
+
+
+    // Убираем старый фон
+
+    canvas.style.backgroundImage =
+        "none";
+
+
+    // Чистый лист
+
+    if(!imageSrc){
+
+        canvas.style.backgroundColor =
+            "#fffdf8";
+
+        return;
+
+    }
+
+
+    // Фотография становится фоном
+
+    canvas.style.backgroundImage =
+        "url('" +
+        imageSrc +
+        "')";
+
+
+    canvas.style.backgroundSize =
+        "100% 100%";
+
+
+    canvas.style.backgroundPosition =
+        "center";
+
+
+    canvas.style.backgroundRepeat =
+        "no-repeat";
+
+
+    canvas.style.backgroundColor =
+        "transparent";
+
+}
+
+
+// ======================================================
+// СОЗДАНИЕ ЛИСТА
 // ======================================================
 
 function drawPaper(){
 
     updateValues();
 
+    setPaperBackground();
 
-    const imageSrc =
-        getImageSrc();
+    clearCanvas();
 
-
-    // ЧИСТЫЙ ЛИСТ
-
-    if(!imageSrc){
-
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        ctx.fillStyle =
-            "#fffdf8";
-
-
-        ctx.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        createText();
-
-        return;
-    }
-
-
-    const img =
-        new Image();
-
-
-    // ВАЖНО:
-    // НЕ ставим crossOrigin.
-    // Именно это мешало твоим фотографиям загружаться.
-
-
-    img.onload = function(){
-
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        // ФОТО НА ВЕСЬ A4
-
-        ctx.drawImage(
-            img,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        // ТЕКСТ ПОВЕРХ ФОТО
-
-        createText();
-
-    };
-
-
-    img.onerror = function(){
-
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        ctx.fillStyle =
-            "#fffdf8";
-
-
-        ctx.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        // Даже если фото не загрузилось,
-        // текст всё равно появится.
-
-        createText();
-
-    };
-
-
-    img.src = imageSrc;
+    createText();
 
 }
 
 
 // ======================================================
-// СОЗДАТЬ ЛИСТ
+// КНОПКА СОЗДАТЬ ЛИСТ
 // ======================================================
 
 document
@@ -447,7 +430,7 @@ document
 
 
 // ======================================================
-// АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ
+// ИЗМЕНЕНИЕ НАСТРОЕК
 // ======================================================
 
 [
@@ -474,16 +457,7 @@ document
 
 
 // ======================================================
-// ЗНАЧЕНИЯ ПРИ ЗАПУСКЕ
-// ======================================================
-
-updateValues();
-
-drawPaper();
-
-
-// ======================================================
-// СОХРАНЕНИЕ PNG
+// СОХРАНЕНИЕ
 // ======================================================
 
 document
@@ -492,36 +466,41 @@ document
     "click",
     function(){
 
-        drawPaper();
+        /*
+        Сейчас фотография является CSS-фоном,
+        поэтому браузер не блокирует её отображение.
 
-        setTimeout(function(){
+        Для сохранения PNG позже сделаем отдельную
+        функцию, которая объединит фото и текст.
+        */
 
-            try{
 
-                const link =
-                    document.createElement("a");
+        const link =
+            document.createElement("a");
 
-                link.download =
-                    "HandWrite-A4.png";
 
-                link.href =
-                    canvas.toDataURL(
-                        "image/png"
-                    );
+        link.download =
+            "HandWrite-A4.png";
 
-                link.click();
 
-            }catch(error){
+        link.href =
+            canvas.toDataURL(
+                "image/png"
+            );
 
-                alert(
-                    "Фото нельзя напрямую сохранить через PNG из-за защиты браузера. Само приложение работает."
-                );
 
-            }
-
-        }, 700);
+        link.click();
 
     }
 );
+
+
+// ======================================================
+// ЗАПУСК
+// ======================================================
+
+updateValues();
+
+drawPaper();
 
 </script>
