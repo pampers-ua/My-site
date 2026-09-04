@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HandWrite A4</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Neucha&family=Pangolin&family=Bad+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Neucha&family=Pangolin&family=Marck+Script&family=Bad+Script&family=Comic+Sans+MS&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box}
@@ -40,9 +40,11 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 Стиль почерка
 <select id="style">
 <option value="caveat">Небрежный (Caveat)</option>
-<option value="neucha">Аккуратный (Neucha)</option>
+<option value="neucha">Неровный (Neucha)</option>
 <option value="pangolin">Детский (Pangolin)</option>
+<option value="marck">Каллиграфический (Marck Script)</option>
 <option value="badscript">Рукописный (Bad Script)</option>
+<option value="comic">Блокнот (Comic Sans MS)</option>
 </select>
 </label>
 
@@ -75,6 +77,11 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 </div>
 </div>
 
+<div class="option" style="margin-top:10px;">
+<label>Высота текста (сдвиг вниз): <span id="textOffsetValue">280</span> px</label>
+<input id="textOffset" type="range" min="100" max="400" value="280">
+</div>
+
 <button id="create">Создать лист</button>
 <button id="save">Сохранить PNG</button>
 
@@ -94,18 +101,19 @@ const size = document.getElementById("size");
 const margin = document.getElementById("margin");
 const line = document.getElementById("line");
 const random = document.getElementById("random");
+const textOffset = document.getElementById("textOffset");
 
 function updateValues(){
     document.getElementById("sizeValue").textContent = size.value;
     document.getElementById("marginValue").textContent = margin.value;
     document.getElementById("lineValue").textContent = line.value;
     document.getElementById("randomValue").textContent = random.value;
+    document.getElementById("textOffsetValue").textContent = textOffset.value;
 }
 
 function randomValue(n){ return (Math.random() * 2 - 1) * n; }
 
 function drawPaper(){
-    // Если выбрана чистая страница, просто рисуем белый фон
     if(paper.value === "plain"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -121,9 +129,7 @@ function drawPaper(){
 
     const img = new Image();
     img.onload = function(){
-        // Растягиваем фото по размеру холста
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        // Далее рисуем текст
         createText();
     };
     img.onerror = function(){
@@ -151,8 +157,10 @@ function getFont(){
     if(style.value === "caveat") return "Caveat";
     if(style.value === "neucha") return "Neucha";
     if(style.value === "pangolin") return "Pangolin";
+    if(style.value === "marck") return "Marck Script";
     if(style.value === "badscript") return "Bad Script";
-    return "cursive";
+    if(style.value === "comic") return "Comic Sans MS";
+    return "Caveat";
 }
 
 function wrapText(str, maxWidth){
@@ -176,17 +184,15 @@ function createText(){
     const fontSize = Number(size.value);
     const m = Number(margin.value);
     const spacing = Number(line.value);
+    const offset = Number(textOffset.value);
     const baseTilt = (Math.random() * 2 - 1) * 0.05;
 
     ctx.font = fontSize + "px " + getFont() + ", cursive";
-    ctx.fillStyle = "#1142a2"; // Синий цвет чернил
+    ctx.fillStyle = "#1142a2";
     ctx.textBaseline = "alphabetic";
     const maxWidth = canvas.width - m * 2;
     const lineHeight = fontSize * spacing;
-
-    // ВАЖНО: Смещаем текст вниз (на 180 пикселей), чтобы он не попадал на стол
-    // и начинался там, где начинается белый лист на фото
-    let y = m + fontSize + 180;
+    let y = m + fontSize + offset;
     const paragraphs = text.value.replace(/\r/g, "").split("\n");
 
     ctx.save();
@@ -198,7 +204,7 @@ function createText(){
         if(!paragraph.trim()){ y += lineHeight; continue; }
         const lines = wrapText(paragraph, maxWidth);
         for(const currentLine of lines){
-            if(y > canvas.height - m - 180){ break; }
+            if(y > canvas.height - m - offset){ break; }
             let x = m;
             for(const character of currentLine){
                 ctx.save();
@@ -227,7 +233,7 @@ document.getElementById("save").addEventListener("click", function(){
     link.click();
 });
 
-[paper, style, size, margin, line, random].forEach(element => {
+[paper, style, size, margin, line, random, textOffset].forEach(element => {
     element.addEventListener("input", function(){
         drawPaper();
     });
