@@ -8,7 +8,6 @@
 
 <style>
 *{box-sizing:border-box}
-
 body{ margin:0; background:#625c53; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#222; }
 .container{ max-width:900px; margin:auto; padding:10px; }
 .panel{ background:white; border-radius:18px; padding:15px; box-shadow:0 5px 25px #0005; }
@@ -36,8 +35,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <textarea id="text" placeholder="Введи или вставь сюда текст..."></textarea>
 
 <div class="controls">
-<label>
-Стиль почерка
+<label>Стиль почерка
 <select id="style">
 <option value="caveat">Небрежный (Caveat)</option>
 <option value="neucha">Аккуратный (Neucha)</option>
@@ -47,8 +45,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 </select>
 </label>
 
-<label>
-Бумага
+<label>Бумага
 <select id="paper">
 <option value="plain">Чистая</option>
 <option value="cell">Тетрадь в клетку</option>
@@ -75,8 +72,8 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 </div>
 
 <div class="option" style="margin-top:10px;">
-<label>Высота текста (сдвиг вниз): <span id="textOffsetValue">280</span> px</label>
-<input id="textOffset" type="range" min="100" max="400" value="280">
+<label>Высота текста (сдвиг вниз): <span id="textOffsetValue">150</span> px</label>
+<input id="textOffset" type="range" min="100" max="400" value="150">
 </div>
 
 <button id="create">Создать лист</button>
@@ -111,17 +108,21 @@ function updateValues(){
 function randomValue(n){ return (Math.random() * 2 - 1) * n; }
 
 function drawPaper(){
+    // Чистая страница
     if(paper.value === "plain"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         return;
     }
 
+    // Тетрадь в клетку (горизонтальная + вертикальная сетка)
     if(paper.value === "cell"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
         ctx.lineWidth = 1;
+        
+        // Горизонтальные линии
         const step = 25;
         for(let y = margin.value; y < canvas.height; y += step){
             ctx.beginPath();
@@ -129,6 +130,7 @@ function drawPaper(){
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
+        // Вертикальные линии
         for(let x = 0; x < canvas.width; x += step){
             ctx.beginPath();
             ctx.moveTo(x, 0);
@@ -145,6 +147,7 @@ function drawPaper(){
         return;
     }
 
+    // Линейка (горизонтальные линии)
     if(paper.value === "lines"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
