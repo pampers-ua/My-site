@@ -12,16 +12,8 @@ const random = document.getElementById("random");
 
 
 // ======================================================
-// НАСТРОЙКИ ОБЛАСТИ ТЕКСТА ДЛЯ КАЖДОГО ФОТО
+// НАСТРОЙКИ ПОЛОЖЕНИЯ ТЕКСТА
 // ======================================================
-//
-// x      = начало текста слева
-// y      = первая строка
-// width  = максимальная ширина текста
-// step   = расстояние между строками
-//
-// Эти значения относятся к холсту 1240 × 1754.
-//
 
 const pageSettings = {
 
@@ -57,7 +49,7 @@ const pageSettings = {
 
 
 // ======================================================
-// ФОТО ЛИСТОВ
+// ССЫЛКИ НА ФОТО
 // ======================================================
 
 function getImageSrc(){
@@ -120,7 +112,7 @@ function randomValue(n){
 
 
 // ======================================================
-// ОБНОВЛЕНИЕ ЗНАЧЕНИЙ ПОЛЗУНКОВ
+// ЗНАЧЕНИЯ ПОЛЗУНКОВ
 // ======================================================
 
 function updateValues(){
@@ -141,7 +133,7 @@ function updateValues(){
 
 
 // ======================================================
-// ПЕРЕНОС ТЕКСТА
+// ПЕРЕНОС СЛОВ
 // ======================================================
 
 function wrapText(str, maxWidth){
@@ -177,18 +169,15 @@ function wrapText(str, maxWidth){
     }
 
     if(current){
-
         result.push(current);
-
     }
 
     return result;
-
 }
 
 
 // ======================================================
-// РИСОВАНИЕ ТЕКСТА
+// ТЕКСТ
 // ======================================================
 
 function createText(){
@@ -199,17 +188,21 @@ function createText(){
         pageSettings[paper.value] || {
 
             x: Number(margin.value),
-            y: Number(margin.value) + fontSize,
+
+            y:
+                Number(margin.value)
+                + fontSize,
+
             width:
-                canvas.width -
-                Number(margin.value) * 2,
+                canvas.width
+                - Number(margin.value) * 2,
+
             step:
-                fontSize * Number(line.value)
+                fontSize
+                * Number(line.value)
 
         };
 
-
-    // Размер шрифта
 
     ctx.font =
         fontSize +
@@ -218,36 +211,24 @@ function createText(){
         ", cursive";
 
 
-    // Синий цвет ручки
+    // Синие чернила
 
     ctx.fillStyle = "#1142a2";
 
     ctx.textBaseline = "alphabetic";
 
 
-    // ==================================================
-    // ПАРАМЕТРЫ ЛИСТА
-    // ==================================================
+    const maxWidth =
+        settings.width;
 
-    let startX = settings.x;
-
-    let startY = settings.y;
-
-    let maxWidth = settings.width;
-
-
-    // ==================================================
-    // РАССТОЯНИЕ МЕЖДУ СТРОКАМИ
-    // ==================================================
 
     let lineHeight =
         settings.step *
         (Number(line.value) / 1.4);
 
 
-    // ==================================================
-    // ТЕКСТ
-    // ==================================================
+    let y = settings.y;
+
 
     const paragraphs =
         text.value
@@ -255,19 +236,13 @@ function createText(){
         .split("\n");
 
 
-    let y = startY;
-
-
     for(const paragraph of paragraphs){
-
-        // Пустая строка
 
         if(!paragraph.trim()){
 
             y += lineHeight;
 
             continue;
-
         }
 
 
@@ -280,8 +255,6 @@ function createText(){
 
         for(const currentLine of lines){
 
-            // Если вышли за лист
-
             if(
                 y >
                 canvas.height -
@@ -289,15 +262,11 @@ function createText(){
             ){
 
                 break;
-
             }
 
 
-            let x = startX;
+            let x = settings.x;
 
-
-            // Каждая буква отдельно
-            // для небольшого эффекта живого почерка
 
             for(const character of currentLine){
 
@@ -307,8 +276,6 @@ function createText(){
                 const j =
                     Number(random.value);
 
-
-                // Небольшой наклон
 
                 ctx.translate(
                     x + randomValue(j),
@@ -349,7 +316,7 @@ function createText(){
 
 
 // ======================================================
-// РИСОВАНИЕ ФОТО ЛИСТА
+// РИСУЕМ ФОТО + ТЕКСТ
 // ======================================================
 
 function drawPaper(){
@@ -361,12 +328,21 @@ function drawPaper(){
         getImageSrc();
 
 
-    // Чистый лист
+    // ЧИСТЫЙ ЛИСТ
 
     if(!imageSrc){
 
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
         ctx.fillStyle =
             "#fffdf8";
+
 
         ctx.fillRect(
             0,
@@ -379,7 +355,6 @@ function drawPaper(){
         createText();
 
         return;
-
     }
 
 
@@ -387,12 +362,12 @@ function drawPaper(){
         new Image();
 
 
-    img.crossOrigin = "anonymous";
+    // ВАЖНО:
+    // НЕ ставим crossOrigin.
+    // Именно это мешало твоим фотографиям загружаться.
 
 
     img.onload = function(){
-
-        // Полностью очищаем старое изображение
 
         ctx.clearRect(
             0,
@@ -402,7 +377,7 @@ function drawPaper(){
         );
 
 
-        // Фотография занимает весь A4
+        // ФОТО НА ВЕСЬ A4
 
         ctx.drawImage(
             img,
@@ -413,13 +388,7 @@ function drawPaper(){
         );
 
 
-        // ВАЖНО:
-        // здесь больше НЕТ красной линии.
-        // Она больше не рисуется программой.
-
-
-        // После загрузки фотографии
-        // накладываем текст
+        // ТЕКСТ ПОВЕРХ ФОТО
 
         createText();
 
@@ -428,8 +397,17 @@ function drawPaper(){
 
     img.onerror = function(){
 
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
         ctx.fillStyle =
             "#fffdf8";
+
 
         ctx.fillRect(
             0,
@@ -438,6 +416,9 @@ function drawPaper(){
             canvas.height
         );
 
+
+        // Даже если фото не загрузилось,
+        // текст всё равно появится.
 
         createText();
 
@@ -450,7 +431,7 @@ function drawPaper(){
 
 
 // ======================================================
-// КНОПКА "СОЗДАТЬ ЛИСТ"
+// СОЗДАТЬ ЛИСТ
 // ======================================================
 
 document
@@ -466,47 +447,7 @@ document
 
 
 // ======================================================
-// СОХРАНЕНИЕ PNG
-// ======================================================
-
-document
-.getElementById("save")
-.addEventListener(
-    "click",
-    function(){
-
-        drawPaper();
-
-
-        // Небольшая задержка,
-        // чтобы фотография успела загрузиться
-
-        setTimeout(function(){
-
-            const link =
-                document.createElement("a");
-
-
-            link.download =
-                "HandWrite-A4.png";
-
-
-            link.href =
-                canvas.toDataURL(
-                    "image/png"
-                );
-
-
-            link.click();
-
-        }, 500);
-
-    }
-);
-
-
-// ======================================================
-// ИЗМЕНЕНИЕ НАСТРОЕК
+// АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ
 // ======================================================
 
 [
@@ -533,11 +474,54 @@ document
 
 
 // ======================================================
-// ЗАПУСК
+// ЗНАЧЕНИЯ ПРИ ЗАПУСКЕ
 // ======================================================
 
 updateValues();
 
 drawPaper();
+
+
+// ======================================================
+// СОХРАНЕНИЕ PNG
+// ======================================================
+
+document
+.getElementById("save")
+.addEventListener(
+    "click",
+    function(){
+
+        drawPaper();
+
+        setTimeout(function(){
+
+            try{
+
+                const link =
+                    document.createElement("a");
+
+                link.download =
+                    "HandWrite-A4.png";
+
+                link.href =
+                    canvas.toDataURL(
+                        "image/png"
+                    );
+
+                link.click();
+
+            }catch(error){
+
+                alert(
+                    "Фото нельзя напрямую сохранить через PNG из-за защиты браузера. Само приложение работает."
+                );
+
+            }
+
+        }, 700);
+
+    }
+);
 
 </script>
