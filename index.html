@@ -1,30 +1,10 @@
-<script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const text = document.getElementById("text");
-const paper = document.getElementById("paper");
-const style = document.getElementById("style");
-const size = document.getElementById("size");
-const margin = document.getElementById("margin");
-const line = document.getElementById("line");
-const random = document.getElementById("random");
-
-function updateValues(){
-    document.getElementById("sizeValue").textContent = size.value;
-    document.getElementById("marginValue").textContent = margin.value;
-    document.getElementById("lineValue").textContent = line.value;
-    document.getElementById("randomValue").textContent = random.value;
-}
-
-function randomValue(n){
-    return (Math.random() * 2 - 1) * n;
-}
-
 function drawPaper(){
 
     if(paper.value === "plain"){
-        ctx.fillStyle = "#fffdf8";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        canvas.style.backgroundImage = "none";
+        canvas.style.backgroundColor = "#fffdf8";
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         createText();
         return;
     }
@@ -32,209 +12,20 @@ function drawPaper(){
     const src = getImageSrc();
 
     if(!src){
-        ctx.fillStyle = "#fffdf8";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        canvas.style.backgroundImage = "none";
+        canvas.style.backgroundColor = "#fffdf8";
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         createText();
         return;
     }
 
-    const img = new Image();
+    canvas.style.backgroundImage = "url('" + src + "')";
+    canvas.style.backgroundSize = "100% 100%";
+    canvas.style.backgroundPosition = "center";
+    canvas.style.backgroundRepeat = "no-repeat";
 
-    img.onload = function(){
-
-        ctx.drawImage(
-            img,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        createText();
-    };
-
-    img.onerror = function(){
-
-        ctx.fillStyle = "#fffdf8";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        createText();
-    };
-
-    img.src = src;
-}
-
-function getImageSrc(){
-
-    if(paper.value === "tetrad")
-        return "https://i.postimg.cc/R0n6CBHK/IMG-1876.jpg";
-
-    if(paper.value === "cell_red")
-        return "https://i.postimg.cc/pdnhVHFr/IMG-1877.jpg";
-
-    if(paper.value === "lines")
-        return "https://i.postimg.cc/k43VBpQZ/IMG-1878.jpg";
-
-    if(paper.value === "table")
-        return "https://i.postimg.cc/RF53ND7b/IMG-1879.jpg";
-
-    return "";
-}
-
-function getFont(){
-
-    if(style.value === "caveat")
-        return "Caveat";
-
-    if(style.value === "neucha")
-        return "Neucha";
-
-    if(style.value === "pangolin")
-        return "Pangolin";
-
-    if(style.value === "badscript")
-        return "Bad Script";
-
-    return "cursive";
-}
-
-function wrapText(str,maxWidth){
-
-    const words = str.split(/\s+/);
-    const result = [];
-    let current = "";
-
-    for(const word of words){
-
-        const test = current
-            ? current + " " + word
-            : word;
-
-        if(ctx.measureText(test).width > maxWidth && current){
-
-            result.push(current);
-            current = word;
-
-        }else{
-
-            current = test;
-        }
-    }
-
-    if(current)
-        result.push(current);
-
-    return result;
-}
-
-function createText(){
-
-    const fontSize = Number(size.value);
-    const m = Number(margin.value);
-    const spacing = Number(line.value);
-
-    ctx.font = fontSize + "px " + getFont() + ", cursive";
-    ctx.fillStyle = "#1142a2";
-    ctx.textBaseline = "alphabetic";
-
-    const maxWidth = canvas.width - m * 2;
-    const lineHeight = fontSize * spacing;
-
-    let y = m + fontSize;
-
-    const paragraphs = text.value
-        .replace(/\r/g,"")
-        .split("\n");
-
-    ctx.save();
-
-    ctx.beginPath();
-    ctx.rect(0,0,canvas.width,canvas.height);
-    ctx.clip();
-
-    for(const paragraph of paragraphs){
-
-        if(!paragraph.trim()){
-
-            y += lineHeight;
-            continue;
-        }
-
-        const lines = wrapText(
-            paragraph,
-            maxWidth
-        );
-
-        for(const currentLine of lines){
-
-            if(y > canvas.height-m)
-                break;
-
-            let x = m;
-
-            for(const character of currentLine){
-
-                ctx.save();
-
-                const j = Number(random.value);
-
-                ctx.translate(
-                    x + randomValue(j),
-                    y + randomValue(j * 0.5)
-                );
-
-                ctx.rotate(
-                    randomValue(j) / 250
-                );
-
-                ctx.fillText(
-                    character,
-                    0,
-                    0
-                );
-
-                ctx.restore();
-
-                x += ctx.measureText(character).width;
-            }
-
-            y += lineHeight;
-        }
-    }
-
-    ctx.restore();
-}
-
-document.getElementById("create").addEventListener("click",function(){
-    drawPaper();
-});
-
-document.getElementById("save").addEventListener("click",function(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     createText();
-
-    const link = document.createElement("a");
-
-    link.download = "HandWrite-A4.png";
-    link.href = canvas.toDataURL("image/png");
-
-    link.click();
-});
-
-[paper,style,size,margin,line,random].forEach(element=>{
-
-    element.addEventListener("input",function(){
-        updateValues();
-        drawPaper();
-    });
-
-    element.addEventListener("change",function(){
-        updateValues();
-        drawPaper();
-    });
-
-});
-
-updateValues();
-drawPaper();
-</script>
+}
