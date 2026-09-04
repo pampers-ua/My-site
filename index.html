@@ -1,8 +1,6 @@
 <script>
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-
 const text = document.getElementById("text");
 const paper = document.getElementById("paper");
 const style = document.getElementById("style");
@@ -11,293 +9,183 @@ const margin = document.getElementById("margin");
 const line = document.getElementById("line");
 const random = document.getElementById("random");
 
+function updateValues(){
+    document.getElementById("sizeValue").textContent = size.value;
+    document.getElementById("marginValue").textContent = margin.value;
+    document.getElementById("lineValue").textContent = line.value;
+    document.getElementById("randomValue").textContent = random.value;
+}
 
-// ======================================================
-// НАСТРОЙКИ ТЕКСТА ДЛЯ ФОТОГРАФИЙ
-// ======================================================
+function randomValue(n){
+    return (Math.random() * 2 - 1) * n;
+}
 
-const pageSettings = {
+function drawPaper(){
 
-    tetrad: {
-        x: 125,
-        y: 145,
-        width: 980,
-        step: 45
-    },
-
-    cell_red: {
-        x: 165,
-        y: 185,
-        width: 900,
-        step: 45
-    },
-
-    lines: {
-        x: 105,
-        y: 170,
-        width: 1010,
-        step: 55
-    },
-
-    table: {
-        x: 120,
-        y: 160,
-        width: 1000,
-        step: 45
+    if(paper.value === "plain"){
+        ctx.fillStyle = "#fffdf8";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        createText();
+        return;
     }
 
-};
+    const src = getImageSrc();
 
+    if(!src){
+        ctx.fillStyle = "#fffdf8";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        createText();
+        return;
+    }
 
-// ======================================================
-// ФОТОГРАФИИ
-// ======================================================
+    const img = new Image();
+
+    img.onload = function(){
+
+        ctx.drawImage(
+            img,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        createText();
+    };
+
+    img.onerror = function(){
+
+        ctx.fillStyle = "#fffdf8";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        createText();
+    };
+
+    img.src = src;
+}
 
 function getImageSrc(){
 
-    if(paper.value === "tetrad"){
+    if(paper.value === "tetrad")
         return "https://i.postimg.cc/R0n6CBHK/IMG-1876.jpg";
-    }
 
-    if(paper.value === "cell_red"){
+    if(paper.value === "cell_red")
         return "https://i.postimg.cc/pdnhVHFr/IMG-1877.jpg";
-    }
 
-    if(paper.value === "lines"){
+    if(paper.value === "lines")
         return "https://i.postimg.cc/k43VBpQZ/IMG-1878.jpg";
-    }
 
-    if(paper.value === "table"){
+    if(paper.value === "table")
         return "https://i.postimg.cc/RF53ND7b/IMG-1879.jpg";
-    }
 
     return "";
 }
 
-
-// ======================================================
-// ШРИФТ
-// ======================================================
-
 function getFont(){
 
-    if(style.value === "caveat"){
+    if(style.value === "caveat")
         return "Caveat";
-    }
 
-    if(style.value === "neucha"){
+    if(style.value === "neucha")
         return "Neucha";
-    }
 
-    if(style.value === "pangolin"){
+    if(style.value === "pangolin")
         return "Pangolin";
-    }
 
-    if(style.value === "badscript"){
+    if(style.value === "badscript")
         return "Bad Script";
-    }
 
     return "cursive";
 }
 
-
-// ======================================================
-// СЛУЧАЙНОЕ ОТКЛОНЕНИЕ
-// ======================================================
-
-function randomValue(n){
-
-    return (Math.random() * 2 - 1) * n;
-
-}
-
-
-// ======================================================
-// ЗНАЧЕНИЯ ПОЛЗУНКОВ
-// ======================================================
-
-function updateValues(){
-
-    document.getElementById("sizeValue").textContent =
-        size.value;
-
-    document.getElementById("marginValue").textContent =
-        margin.value;
-
-    document.getElementById("lineValue").textContent =
-        line.value;
-
-    document.getElementById("randomValue").textContent =
-        random.value;
-
-}
-
-
-// ======================================================
-// ПЕРЕНОС ТЕКСТА
-// ======================================================
-
-function wrapText(str, maxWidth){
+function wrapText(str,maxWidth){
 
     const words = str.split(/\s+/);
-
     const result = [];
-
     let current = "";
 
     for(const word of words){
 
-        const test =
-            current
+        const test = current
             ? current + " " + word
             : word;
 
-        if(
-            ctx.measureText(test).width > maxWidth
-            && current
-        ){
+        if(ctx.measureText(test).width > maxWidth && current){
 
             result.push(current);
-
             current = word;
 
         }else{
 
             current = test;
-
         }
-
     }
 
-    if(current){
-
+    if(current)
         result.push(current);
 
-    }
-
     return result;
-
 }
-
-
-// ======================================================
-// РИСОВАНИЕ ТЕКСТА
-// ======================================================
 
 function createText(){
 
-    const settings =
-        pageSettings[paper.value] || {
+    const fontSize = Number(size.value);
+    const m = Number(margin.value);
+    const spacing = Number(line.value);
 
-            x: Number(margin.value),
+    ctx.font = fontSize + "px " + getFont() + ", cursive";
+    ctx.fillStyle = "#1142a2";
+    ctx.textBaseline = "alphabetic";
 
-            y:
-                Number(margin.value) +
-                Number(size.value),
+    const maxWidth = canvas.width - m * 2;
+    const lineHeight = fontSize * spacing;
 
-            width:
-                canvas.width -
-                Number(margin.value) * 2,
+    let y = m + fontSize;
 
-            step:
-                Number(size.value) *
-                Number(line.value)
-
-        };
-
-
-    const fontSize =
-        Number(size.value);
-
-
-    ctx.font =
-        fontSize +
-        "px " +
-        getFont() +
-        ", cursive";
-
-
-    ctx.fillStyle =
-        "#1142a2";
-
-
-    ctx.textBaseline =
-        "alphabetic";
-
-
-    const maxWidth =
-        settings.width;
-
-
-    const lineHeight =
-        settings.step *
-        (Number(line.value) / 1.4);
-
-
-    let y =
-        settings.y;
-
-
-    const paragraphs =
-        text.value
-        .replace(/\r/g, "")
+    const paragraphs = text.value
+        .replace(/\r/g,"")
         .split("\n");
 
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.rect(0,0,canvas.width,canvas.height);
+    ctx.clip();
 
     for(const paragraph of paragraphs){
 
         if(!paragraph.trim()){
 
             y += lineHeight;
-
             continue;
-
         }
 
-
-        const lines =
-            wrapText(
-                paragraph,
-                maxWidth
-            );
-
+        const lines = wrapText(
+            paragraph,
+            maxWidth
+        );
 
         for(const currentLine of lines){
 
-            if(
-                y >
-                canvas.height -
-                Number(margin.value)
-            ){
-
+            if(y > canvas.height-m)
                 break;
 
-            }
-
-
-            let x =
-                settings.x;
-
+            let x = m;
 
             for(const character of currentLine){
 
                 ctx.save();
 
-
-                const j =
-                    Number(random.value);
-
+                const j = Number(random.value);
 
                 ctx.translate(
                     x + randomValue(j),
                     y + randomValue(j * 0.5)
                 );
 
-
                 ctx.rotate(
-                    randomValue(j) / 180
+                    randomValue(j) / 250
                 );
-
 
                 ctx.fillText(
                     character,
@@ -305,202 +193,48 @@ function createText(){
                     0
                 );
 
-
                 ctx.restore();
 
-
-                x +=
-                    ctx.measureText(
-                        character
-                    ).width;
-
+                x += ctx.measureText(character).width;
             }
 
-
             y += lineHeight;
-
         }
-
     }
 
+    ctx.restore();
 }
 
+document.getElementById("create").addEventListener("click",function(){
+    drawPaper();
+});
 
-// ======================================================
-// ОЧИСТКА CANVAS
-// ======================================================
-
-function clearCanvas(){
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-}
-
-
-// ======================================================
-// УСТАНОВКА ФОТО КАК ФОНА
-// ======================================================
-
-function setPaperBackground(){
-
-    const imageSrc =
-        getImageSrc();
-
-
-    // Убираем старый фон
-
-    canvas.style.backgroundImage =
-        "none";
-
-
-    // Чистый лист
-
-    if(!imageSrc){
-
-        canvas.style.backgroundColor =
-            "#fffdf8";
-
-        return;
-
-    }
-
-
-    // Фотография становится фоном
-
-    canvas.style.backgroundImage =
-        "url('" +
-        imageSrc +
-        "')";
-
-
-    canvas.style.backgroundSize =
-        "100% 100%";
-
-
-    canvas.style.backgroundPosition =
-        "center";
-
-
-    canvas.style.backgroundRepeat =
-        "no-repeat";
-
-
-    canvas.style.backgroundColor =
-        "transparent";
-
-}
-
-
-// ======================================================
-// СОЗДАНИЕ ЛИСТА
-// ======================================================
-
-function drawPaper(){
-
-    updateValues();
-
-    setPaperBackground();
-
-    clearCanvas();
+document.getElementById("save").addEventListener("click",function(){
 
     createText();
 
-}
+    const link = document.createElement("a");
 
+    link.download = "HandWrite-A4.png";
+    link.href = canvas.toDataURL("image/png");
 
-// ======================================================
-// КНОПКА СОЗДАТЬ ЛИСТ
-// ======================================================
+    link.click();
+});
 
-document
-.getElementById("create")
-.addEventListener(
-    "click",
-    function(){
+[paper,style,size,margin,line,random].forEach(element=>{
 
+    element.addEventListener("input",function(){
+        updateValues();
         drawPaper();
+    });
 
-    }
-);
-
-
-// ======================================================
-// ИЗМЕНЕНИЕ НАСТРОЕК
-// ======================================================
-
-[
-    paper,
-    style,
-    size,
-    margin,
-    line,
-    random
-]
-.forEach(function(element){
-
-    element.addEventListener(
-        "input",
-        drawPaper
-    );
-
-    element.addEventListener(
-        "change",
-        drawPaper
-    );
+    element.addEventListener("change",function(){
+        updateValues();
+        drawPaper();
+    });
 
 });
 
-
-// ======================================================
-// СОХРАНЕНИЕ
-// ======================================================
-
-document
-.getElementById("save")
-.addEventListener(
-    "click",
-    function(){
-
-        /*
-        Сейчас фотография является CSS-фоном,
-        поэтому браузер не блокирует её отображение.
-
-        Для сохранения PNG позже сделаем отдельную
-        функцию, которая объединит фото и текст.
-        */
-
-
-        const link =
-            document.createElement("a");
-
-
-        link.download =
-            "HandWrite-A4.png";
-
-
-        link.href =
-            canvas.toDataURL(
-                "image/png"
-            );
-
-
-        link.click();
-
-    }
-);
-
-
-// ======================================================
-// ЗАПУСК
-// ======================================================
-
 updateValues();
-
 drawPaper();
-
 </script>
