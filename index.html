@@ -72,6 +72,14 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 </div>
 
 <div class="option" style="margin-top:10px;">
+<label>Отступ от поля (X): <span id="xOffsetValue">80</span> px</label>
+<input id="xOffset" type="range" min="20" max="180" value="80">
+</div>
+<div class="option" style="margin-top:10px;">
+<label>Ширина текста: <span id="widthValue">600</span> px</label>
+<input id="width" type="range" min="200" max="900" value="600">
+</div>
+<div class="option" style="margin-top:10px;">
 <label>Высота текста (сдвиг вниз): <span id="textOffsetValue">100</span> px</label>
 <input id="textOffset" type="range" min="100" max="400" value="100">
 </div>
@@ -95,6 +103,8 @@ const size = document.getElementById("size");
 const margin = document.getElementById("margin");
 const line = document.getElementById("line");
 const random = document.getElementById("random");
+const xOffset = document.getElementById("xOffset");
+const width = document.getElementById("width");
 const textOffset = document.getElementById("textOffset");
 
 function updateValues(){
@@ -102,6 +112,8 @@ function updateValues(){
     document.getElementById("marginValue").textContent = margin.value;
     document.getElementById("lineValue").textContent = line.value;
     document.getElementById("randomValue").textContent = random.value;
+    document.getElementById("xOffsetValue").textContent = xOffset.value;
+    document.getElementById("widthValue").textContent = width.value;
     document.getElementById("textOffsetValue").textContent = textOffset.value;
 }
 
@@ -123,9 +135,7 @@ function drawPaper(){
 
     const img = new Image();
     img.onload = function(){
-        // Растягиваем фото по размеру холста, соблюдая пропорции
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        // Далее рисуем текст
         createText();
     };
     img.onerror = function(){
@@ -176,12 +186,14 @@ function createText(){
     const m = Number(margin.value);
     const spacing = Number(line.value);
     const offset = Number(textOffset.value);
+    const xOff = Number(xOffset.value);
+    const maxW = Number(width.value);
     const baseTilt = (Math.random() * 2 - 1) * 0.05;
 
     ctx.font = fontSize + "px " + getFont() + ", cursive";
     ctx.fillStyle = "#1142a2";
     ctx.textBaseline = "alphabetic";
-    const maxWidth = canvas.width - m * 2 - 110;
+    const maxWidth = maxW;
     const lineHeight = fontSize * spacing;
     let y = m + fontSize + offset - 100;
     const paragraphs = text.value.replace(/\r/g, "").split("\n");
@@ -196,12 +208,13 @@ function createText(){
         const lines = wrapText(paragraph, maxWidth);
         for(const currentLine of lines){
             if(y > canvas.height - m - offset){ break; }
-            let x = m;
+            let x = xOff;
             for(const character of currentLine){
                 ctx.save();
                 const j = Number(random.value);
-                ctx.rotate(baseTilt + randomValue(j) / 250);
-                ctx.translate(x + randomValue(j), y);
+                // Текст наклоняется в одну сторону (как при письме), но строго параллельно
+                ctx.rotate(baseTilt);
+                ctx.translate(x, y);
                 ctx.fillText(character, 0, 0);
                 ctx.restore();
                 x += ctx.measureText(character).width;
@@ -224,7 +237,7 @@ document.getElementById("save").addEventListener("click", function(){
     link.click();
 });
 
-[paper, style, size, margin, line, random, textOffset].forEach(element => {
+[paper, style, size, margin, line, random, xOffset, width, textOffset].forEach(element => {
     element.addEventListener("input", function(){
         drawPaper();
     });
