@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HandWrite A4</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Neucha&family=Pangolin&family=Marck+Script&family=Bad+Script&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box}
 
@@ -37,12 +39,11 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <label>
 Стиль почерка
 <select id="style">
-<option value="cursive">Рукописный (cursive)</option>
-<option value="comic">Блокнот (Comic Sans MS)</option>
-<option value="italic">Наклонный (italic)</option>
-<option value="serif">Каллиграфия (serif)</option>
-<option value="bold">Грязный (bold)</option>
-<option value="fantasy">Детский (fantasy)</option>
+<option value="caveat">Небрежный (Caveat)</option>
+<option value="neucha">Аккуратный (Neucha)</option>
+<option value="pangolin">Детский (Pangolin)</option>
+<option value="marck">Каллиграфический (Marck Script)</option>
+<option value="badscript">Рукописный (Bad Script)</option>
 </select>
 </label>
 
@@ -50,10 +51,8 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 Бумага
 <select id="paper">
 <option value="plain">Чистая</option>
-<option value="tetrad">Тетрадь в клетку</option>
-<option value="cell_red">Клетка с красным полем</option>
+<option value="cell">Тетрадь в клетку</option>
 <option value="lines">Линейка</option>
-<option value="table">Стол</option>
 </select>
 </label>
 
@@ -118,53 +117,70 @@ function drawPaper(){
         return;
     }
 
-    const src = getImageSrc();
-    if(!src){
+    if(paper.value === "cell"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
+        ctx.lineWidth = 1;
+        const step = 25;
+        for(let y = margin.value; y < canvas.height; y += step){
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+        for(let x = 0; x < canvas.width; x += step){
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+        // Красная линия полей
+        ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(80, 0);
+        ctx.lineTo(80, canvas.height);
+        ctx.stroke();
         return;
     }
 
-    const img = new Image();
-    img.onload = function(){
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        createText();
-    };
-    img.onerror = function(){
+    if(paper.value === "lines"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        createText();
-    };
-    img.src = src;
-}
-
-function getImageSrc(){
-    if(paper.value === "tetrad"){
-        return "https://i.postimg.cc/R0n6CBHK/IMG-1876.jpg";
-    } else if(paper.value === "cell_red"){
-        return "https://i.postimg.cc/pdnhVHFr/IMG-1877.jpg";
-    } else if(paper.value === "lines"){
-        return "https://i.postimg.cc/k43VBpQZ/IMG-1878.jpg";
-    } else if(paper.value === "table"){
-        return "https://i.postimg.cc/RF53ND7b/IMG-1879.jpg";
+        ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
+        ctx.lineWidth = 1;
+        const step = 40;
+        for(let y = margin.value; y < canvas.height; y += step){
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+        // Красная линия полей
+        ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(80, 0 let);
+        ctx.lineTo(80, canvas.height);
+        ctx.stroke();
+        return;
     }
-    return "";
 }
 
 function getFont(){
-    if(style.value === "cursive") return "cursive";
-    if(style.value === "comic") return "Comic Sans MS";
-    if(style.value === "italic") return "italic";
-    if(style.value === "serif") return "serif";
-    if(style.value === "bold") return "bold";
-    if(style.value === "fantasy") return "fantasy";
-    return "cursive";
+    if(style.value === "caveat") return "Caveat";
+    if(style.value === "neucha") return "Neucha";
+    if(style.value === "pangolin") return "Pangolin";
+    if(style.value === "marck") return "Marck Script";
+    if(style.value === "badscript") return "Bad Script";
+    return "Caveat";
 }
 
 function wrapText(str, maxWidth){
     const words = str.split(/\s+/);
     const result = [];
-    let current = "";
+    current = "";
     for(const word of words){
         const test = current ? current + " " + word : word;
         if(ctx.measureText(test).width > maxWidth && current){
@@ -237,7 +253,7 @@ document.getElementById("save").addEventListener("click", function(){
     });
     element.addEventListener("change", function(){
         drawPaper();
-   под });
+    });
 });
 
 updateValues();
