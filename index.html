@@ -72,8 +72,8 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 </div>
 
 <div class="option" style="margin-top:10px;">
-<label>Высота текста (сдвиг вниз): <span id="textOffsetValue">150</span> px</label>
-<input id="textOffset" type="range" min="100" max="400" value="150">
+<label>Высота текста (сдвиг вниз): <span id="textOffsetValue">100</span> px</label>
+<input id="textOffset" type="range" min="100" max="400" value="100">
 </div>
 
 <button id="create">Создать лист</button>
@@ -120,18 +120,21 @@ function drawPaper(){
         ctx.strokeStyle = "rgba(70, 120, 180, 0.25)";
         ctx.lineWidth = 1;
         const step = 25;
+        // Горизонтальные листы
         for(let y = margin.value; y < canvas.height; y += step){
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
+        // Вертикальные линии
         for(let x = 0; x < canvas.width; x += step){
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, canvas.height);
             ctx.stroke();
         }
+        // Красная линия полей
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -153,6 +156,7 @@ function drawPaper(){
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
+        // Красная линия полей
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -259,4 +263,4 @@ drawPaper();
 createText();
 </script>
 </body>
-</html>
+</html
