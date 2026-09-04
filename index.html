@@ -123,15 +123,8 @@ function drawPaper(){
 
     const img = new Image();
     img.onload = function(){
-        // Растягиваем фото по размеру холста (прямо на весь лист)
+        // Растягиваем фото по размеру холста, соблюдая пропорции
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        // Покраска линии поля (imagine: красная линия в центре)
-        ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(80, 0);
-        ctx.lineTo(80, canvas.height);
-        ctx.stroke();
         // Далее рисуем текст
         createText();
     };
