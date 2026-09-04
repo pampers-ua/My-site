@@ -105,6 +105,7 @@ function updateValues(){
 function randomValue(n){ return (Math.random() * 2 - 1) * n; }
 
 function drawPaper(){
+    // Если выбрана чистая страница, просто рисуем белый фон
     if(paper.value === "plain"){
         ctx.fillStyle = "#fffdf8";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -120,7 +121,9 @@ function drawPaper(){
 
     const img = new Image();
     img.onload = function(){
+        // Растягиваем фото по размеру холста
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // Далее рисуем текст
         createText();
     };
     img.onerror = function(){
@@ -176,11 +179,14 @@ function createText(){
     const baseTilt = (Math.random() * 2 - 1) * 0.05;
 
     ctx.font = fontSize + "px " + getFont() + ", cursive";
-    ctx.fillStyle = "#1142a2";
+    ctx.fillStyle = "#1142a2"; // Синий цвет чернил
     ctx.textBaseline = "alphabetic";
     const maxWidth = canvas.width - m * 2;
     const lineHeight = fontSize * spacing;
-    let y = m + fontSize;
+
+    // ВАЖНО: Смещаем текст вниз (на 180 пикселей), чтобы он не попадал на стол
+    // и начинался там, где начинается белый лист на фото
+    let y = m + fontSize + 180;
     const paragraphs = text.value.replace(/\r/g, "").split("\n");
 
     ctx.save();
@@ -192,7 +198,7 @@ function createText(){
         if(!paragraph.trim()){ y += lineHeight; continue; }
         const lines = wrapText(paragraph, maxWidth);
         for(const currentLine of lines){
-            if(y > canvas.height - m){ break; }
+            if(y > canvas.height - m - 180){ break; }
             let x = m;
             for(const character of currentLine){
                 ctx.save();
