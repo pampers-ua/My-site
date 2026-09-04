@@ -212,7 +212,7 @@ function createText(){
             for(const character of currentLine){
                 ctx.save();
                 const j = Number(random.value);
-                // Текст наклоняется в одну сторону (как при письме), но строго параллельно
+                // Текст наклоняется в одну сторону, но строго параллельно
                 ctx.rotate(baseTilt);
                 ctx.translate(x, y);
                 ctx.fillText(character, 0, 0);
