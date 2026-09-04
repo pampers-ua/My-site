@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HandWrite A4</title>
-<!-- Подключаем шрифты с имитацией почерка -->
-<link href="https://fonts.googleapis.com/css2?family=Bad+Script&family=Pangolin&family=Mansalva&display=swap" rel="stylesheet">
+<!-- Подключаем кириллические рукописные шрифты -->
+<link href="https://fonts.googleapis.com/css2?family=Bad+Script&family=Pangolin&family=Mansalva&family=Marck+Script&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box}
@@ -43,6 +43,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <option value="badscript">Небрежный (Bad Script)</option>
 <option value="pangolin">Детский (Pangolin)</option>
 <option value="mansalva">Очень грязный (Mansalva)</option>
+<option value="marck">Русский (Marck Script)</option>
 </select>
 </label>
 
@@ -50,9 +51,11 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 Бумага
 <select id="paper">
 <option value="plain">Чистая</option>
-<option value="lines">Линейка (Синяя)</option>
-<option value="grid">Клетка (Синяя)</option>
-<option value="lines_red">Линейка (Красная)</option>
+<option value="grid">Синяя клетка</option>
+<option value="grid_red">Красная клетка</option>
+<option value="tetrad">Тетрадная</option>
+<option value="notepad">Блокнот</option>
+<option value="lines">Линейка</option>
 </select>
 </label>
 
@@ -103,24 +106,41 @@ function updateValues(){
 
 function randomValue(n){ return (Math.random() * 2 - 1) * n; }
 
+// Выравнивание текста: чтобы он не "прыгал" при изменении размера
+function resetText(){
+    const firstLineY = Number(margin.value) + Number(size.value);
+    ctx.font = Number(size.value) + "px " + getFont() + ", cursive";
+    ctx.textBaseline = "alphabetic";
+    // Обработка пустых строк
+    for (const para of text.value.split("\n")) {
+        if (para.trim()) {
+            ctx.fillText(" ", 0, firstLineY);
+            return;
+        }
+    }
+}
+
 function drawPaper(){
-    ctx.fillStyle = "#fffdf8"; // Цвет бумаги
+    ctx.fillStyle = "#fffdf8";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     if(paper.value === "plain") return;
 
-    // Красная вертикальная линия полей
-    if(paper.value === "lines_red"){
+    // Всегда рисуем красное поле слева, независимо от формата
+    if(paper.value === "grid" || paper.value === "grid_red" || paper.value === "tetrad" || paper.value === "lines" || paper.value === "notepad"){
         ctx.strokeStyle = "rgba(255, 0, 0, 0.6)";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(80, 0);
         ctx.lineTo(80, canvas.height);
         ctx.stroke();
     }
 
-    const step = paper.value === "grid" ? 45 : 55;
-    if(paper.value === "grid" || paper.value === "lines" || paper.value === "lines_red"){
-        ctx.strokeStyle = "rgba(70, 120, 180, 0.25)"; // Синие линии
+    // Разные размеры клеток
+    const step = paper.value === "grid" || paper.value === "grid_red" || paper.value === "tetrad" ? 45 : 55;
+
+    if(paper.value === "grid" || paper.value === "grid_red" || paper.value === "tetrad" || paper.value === "notepad" || paper.value === "lines"){
+        // Синие или красные линии
+        ctx.strokeStyle = paper.value === "grid_red" ? "rgba(255, 0, 0, 0.3)" : "rgba(70, 120, 180, 0.25)";
         ctx.lineWidth = 2;
         for(let y = margin.value; y < canvas.height; y += step){
             ctx.beginPath();
@@ -128,7 +148,7 @@ function drawPaper(){
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
-        if(paper.value === "grid"){
+        if(paper.value === "grid" || paper.value === "grid_red" || paper.value === "tetrad"){
             for(let x = 0; x < canvas.width; x += 45){
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
@@ -143,6 +163,7 @@ function getFont(){
     if(style.value === "badscript") return "Bad Script";
     if(style.value === "pangolin") return "Pangolin";
     if(style.value === "mansalva") return "Mansalva";
+    if(style.value === "marck") return "Marck Script";
     return "cursive";
 }
 
@@ -166,6 +187,8 @@ function wrapText(str, maxWidth){
 function createPage(){
     updateValues();
     drawPaper();
+    resetText(); // Выравниваем текст в начале страницы
+
     const fontSize = Number(size.value);
     const m = Number(margin.value);
     const spacing = Number(line.value);
