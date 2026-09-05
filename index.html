@@ -127,6 +127,8 @@ function drawPaper(){
 
     const img = new Image();
     img.onload = function(){
+        // Совмещаем фото, чтобы заканчивалось примерно на 75% высоты (низ фото)
+        // Ниже фото остаётся «пустое» пространство, das heißt, текст будет укладываться nur bis zum unteren Rand der Bildfläche
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         createText();
     };
