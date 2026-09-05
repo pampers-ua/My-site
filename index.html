@@ -75,10 +75,6 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <label>Ширина текста: <span id="widthValue">800</span> px</label>
 <input id="width" type="range" min="200" max="1000" value="800">
 </div>
-<div class="option" style="margin-top:10px;">
-<label>Высота текста (сдвиг вниз): <span id="textOffsetValue">100</span> px</label>
-<input id="textOffset" type="range" min="50" max="1000" value="100">
-</div>
 
 <button id="create">Создать лист</button>
 <button id="save">Сохранить PNG</button>
@@ -100,7 +96,6 @@ const margin = document.getElementById("margin");
 const line = document.getElementById("line");
 const xOffset = document.getElementById("xOffset");
 const width = document.getElementById("width");
-const textOffset = document.getElementById("textOffset");
 
 function updateValues(){
     document.getElementById("sizeValue").textContent = size.value;
@@ -108,7 +103,6 @@ function updateValues(){
     document.getElementById("lineValue").textContent = line.value;
     document.getElementById("xOffsetValue").textContent = xOffset.value;
     document.getElementById("widthValue").textContent = width.value;
-    document.getElementById("textOffsetValue").textContent = textOffset.value;
 }
 
 function drawPaper(){
@@ -177,7 +171,6 @@ function createText(){
     const fontSize = Number(size.value);
     const m = Number(margin.value);
     const spacing = Number(line.value);
-    const offset = Number(textOffset.value);
     const xOff = Number(xOffset.value);
     const maxW = Number(width.value);
 
@@ -186,7 +179,7 @@ function createText(){
     ctx.textBaseline = "alphabetic";
     const maxWidth = maxW;
     const lineHeight = fontSize * spacing;
-    let y = m + fontSize + offset - 100;
+    let y = m + fontSize; // Стартовая позиция текста (без сдвига)
     const paragraphs = text.value.replace(/\r/g, "").split("\n");
 
     ctx.save();
@@ -198,7 +191,7 @@ function createText(){
         if(!paragraph.trim()){ y += lineHeight; continue; }
         const lines = wrapText(paragraph, maxWidth);
         for(const currentLine of lines){
-            if(y > canvas.height - m - offset){ break; }
+            if(y > canvas.height - 50){ break; } // Текст останавливается только у самого конца листа
             let x = xOff;
             for(const character of currentLine){
                 ctx.save();
@@ -226,7 +219,7 @@ document.getElementById("save").addEventListener("click", function(){
     link.click();
 });
 
-[paper, style, size, margin, line, xOffset, width, textOffset].forEach(element => {
+[paper, style, size, margin, line, xOffset, width].forEach(element => {
     element.addEventListener("input", function(){
         drawPaper();
     });
