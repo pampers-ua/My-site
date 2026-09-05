@@ -62,7 +62,7 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <input id="margin" type="range" min="30" max="160" value="70">
 </div>
 <div class="option">
-<label>Интервал: <span id="lineValue">1.4</span></label>
+<label>Интервал: " <span id="lineValue">1.4</span></labelne>
 <input id="line" type="range" min="1" max="2" step="0.1" value="1.4">
 </div>
 </div>
@@ -72,12 +72,12 @@ canvas{ display:block; width:100%; height:auto; background:white; }
 <input id="xOffset" type="range" min="20" max="180" value="80">
 </div>
 <div class="option" style="margin-top:10px;">
-<label>Ширина текста: <span id="widthValue">600</span> px</label>
-<input id="width" type="range" min="200" max="900" value="600">
+<label>Ширина текста: <span id="widthValue">800</span> px</label>
+<input id="width" type="range" min="200" max="1000" value="800">
 </div>
 <div class="option" style="margin-top:10px;">
 <label>Высота текста (сдвиг вниз): <span id="textOffsetValue">100</span> px</label>
-<input id="textOffset" type="range" min="100" max="400" value="100">
+<input id="textOffset" type="range" min="50" max="600" value="100">
 </div>
 
 <button id="create">Создать лист</button>
@@ -127,8 +127,6 @@ function drawPaper(){
 
     const img = new Image();
     img.onload = function(){
-        // Совмещаем фото, чтобы заканчивалось примерно на 75% высоты (низ фото)
-        // Ниже фото остаётся «пустое» пространство, das heißt, текст будет укладываться nur bis zum unteren Rand der Bildfläche
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         createText();
     };
@@ -151,7 +149,7 @@ function getImageSrc(){
 
 function getFont(){
     if(style.value === "caveat") return "Caveat";
-    if(style.value === "neucha") return "Neucha";
+    if(style.value ===ucha") return "Neucha";
     if(style.value === "pangolin") return "Pangolin";
     if(style.value === "marck") return "Marck Script";
     if(style.value === "badscript") return "Bad Script";
